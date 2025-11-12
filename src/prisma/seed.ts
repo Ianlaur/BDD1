@@ -24,8 +24,47 @@ async function main() {
   await prisma.account.deleteMany();
   await prisma.user.deleteMany();
 
-  // Create password hash
+  // Create password hashes
   const hashedPassword = await hash("password123", 12);
+  const adminPassword = await hash("admin123", 12);
+  const devPassword = await hash("dev@2025", 12);
+
+  // Create Developer/Business Admin User
+  console.log("Creating developer admin user...");
+  const devAdmin = await prisma.user.create({
+    data: {
+      email: "admin@associationconnect.com",
+      name: "Platform Admin",
+      password: devPassword,
+      role: UserRole.ADMIN,
+      emailVerified: new Date(),
+    },
+  });
+
+  // Create Association User (Ian Laurent)
+  console.log("Creating Ian Laurent association...");
+  const ianAssociation = await prisma.user.create({
+    data: {
+      email: "ilaurent@eugeniaschool.com",
+      name: "Ian Laurent Association",
+      password: adminPassword,
+      role: UserRole.ASSOCIATION,
+      emailVerified: new Date(),
+      associationProfile: {
+        create: {
+          description: "Official association managed by Ian Laurent - connecting students with amazing opportunities and experiences.",
+          category: "Student Government",
+          website: "https://eugeniaschool.com",
+          contactEmail: "ilaurent@eugeniaschool.com",
+          contactPhone: "+1234567890",
+          verified: true,
+        },
+      },
+    },
+    include: {
+      associationProfile: true,
+    },
+  });
 
   // Create Students
   console.log("Creating student users...");
@@ -410,19 +449,22 @@ async function main() {
 
   console.log("✅ Database seeded successfully!");
   console.log("\n📊 Created:");
+  console.log("  - 1 Platform Admin");
+  console.log("  - 1 Ian Laurent Association");
   console.log("  - 3 Students");
-  console.log("  - 5 Associations");
+  console.log("  - 5 Other Associations");
   console.log("  - 6 Memberships");
   console.log("  - 4 Events");
   console.log("  - 2 Event Registrations");
   console.log("  - 4 Posts");
   console.log("  - 3 Notifications");
   console.log("\n🔐 Test Credentials:");
-  console.log("  Email: john.doe@university.edu");
-  console.log("  Email: jane.smith@university.edu");
-  console.log("  Email: alex.johnson@university.edu");
-  console.log("  Email: contact@techclub.university.edu");
-  console.log("  Password: password123");
+  console.log("  Platform Admin: admin@associationconnect.com / dev@2025");
+  console.log("  Ian Laurent Association: ilaurent@eugeniaschool.com / admin123");
+  console.log("  Student: john.doe@university.edu / password123");
+  console.log("  Student: jane.smith@university.edu / password123");
+  console.log("  Student: alex.johnson@university.edu / password123");
+  console.log("  Tech Club Association: contact@techclub.university.edu / password123");
 }
 
 main()

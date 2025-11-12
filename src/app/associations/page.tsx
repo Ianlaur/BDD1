@@ -43,9 +43,10 @@ export default async function AssociationsPage() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {associations.map((association) => (
-            <div
+            <Link
               key={association.id}
-              className="border rounded-lg overflow-hidden hover:shadow-lg transition"
+              href={`/associations/${association.id}`}
+              className="border rounded-lg overflow-hidden hover:shadow-lg transition block"
             >
               <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-500 relative">
                 {association.verified && (
@@ -105,13 +106,7 @@ export default async function AssociationsPage() {
                   </span>
                 </div>
 
-                <div className="flex gap-2">
-                  <Link
-                    href={`/associations/${association.id}`}
-                    className="flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                  >
-                    View Details
-                  </Link>
+                                <div className="flex gap-2">
                   {association.website && (
                     <a
                       href={association.website}
@@ -125,7 +120,7 @@ export default async function AssociationsPage() {
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
