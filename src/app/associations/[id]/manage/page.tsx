@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function AssociationManagePage({ params }: PageProps) {
