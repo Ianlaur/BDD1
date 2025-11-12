@@ -10,5 +10,10 @@
       "main": true,
       "dev": false
     }
+  },
+  "build": {
+    "env": {
+      "SKIP_ENV_VALIDATION": "1"
+    }
   }
 }

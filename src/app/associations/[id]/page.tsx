@@ -5,9 +5,9 @@ import Link from "next/link";
 import { JoinAssociationButton } from "@/components/JoinAssociationButton";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function AssociationInfoPage({ params }: PageProps) {
@@ -73,7 +73,7 @@ export default async function AssociationInfoPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl">
             <div className="flex items-center gap-4 mb-4">
