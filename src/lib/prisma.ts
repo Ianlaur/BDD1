@@ -1,5 +1,18 @@
 import { PrismaClient } from "@prisma/client";
 
+// Helpful early check for missing DATABASE_URL to avoid obscure runtime errors
+if (!process.env.DATABASE_URL) {
+  const msg = [
+    "Missing required environment variable: DATABASE_URL.",
+    "In production (Vercel) set it at: Project → Settings → Environment Variables → Add",
+    "Example value: postgresql://user:password@host:5432/dbname?sslmode=require",
+    "Or use the Vercel CLI: `vercel env add DATABASE_URL production`",
+  ].join(" ");
+
+  // Throwing here surfaces a clear error during build/runtime instead of a Prisma validation error
+  throw new Error(msg);
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
@@ -7,7 +20,7 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: ['error', 'warn'],
+    log: ["error", "warn"],
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
