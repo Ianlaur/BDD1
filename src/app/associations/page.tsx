@@ -90,75 +90,79 @@ export default async function AssociationsPage() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {associations.map((association) => (
-            <Link
+            <div
               key={association.id}
-              href={`/associations/${association.id}`}
-              className="border rounded-lg overflow-hidden hover:shadow-lg transition block"
+              className="border rounded-lg overflow-hidden hover:shadow-lg transition"
             >
-              <div className="h-32 bg-linear-to-r from-blue-500 to-purple-500 relative">
-                {association.verified && (
-                  <span className="absolute top-2 right-2 bg-white text-blue-600 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
-                    <svg
-                      className="w-3 h-3"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Verified
-                  </span>
-                )}
-              </div>
+              <Link href={`/associations/${association.id}`}>
+                <div className="h-32 bg-linear-to-r from-blue-500 to-purple-500 relative cursor-pointer">
+                  {association.verified && (
+                    <span className="absolute top-2 right-2 bg-white text-blue-600 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+                      <svg
+                        className="w-3 h-3"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Verified
+                    </span>
+                  )}
+                </div>
+              </Link>
 
               <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  {association.user.image ? (
-                    <img
-                      src={association.user.image}
-                      alt={association.user.name || ""}
-                      className="w-12 h-12 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                      {association.user.name?.charAt(0) || "A"}
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-bold text-lg">
-                      {association.user.name}
-                    </h3>
-                    {association.category && (
-                      <span className="text-sm text-gray-500">
-                        {association.category}
-                      </span>
+                <Link href={`/associations/${association.id}`} className="block">
+                  <div className="flex items-center gap-3 mb-4">
+                    {association.user.image ? (
+                      <img
+                        src={association.user.image}
+                        alt={association.user.name || ""}
+                        className="w-12 h-12 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                        {association.user.name?.charAt(0) || "A"}
+                      </div>
                     )}
+                    <div>
+                      <h3 className="font-bold text-lg">
+                        {association.user.name}
+                      </h3>
+                      {association.category && (
+                        <span className="text-sm text-gray-500">
+                          {association.category}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-gray-600 mb-4 line-clamp-3">
-                  {association.description ||
-                    "No description available yet."}
-                </p>
+                  <p className="text-gray-600 mb-4 line-clamp-3">
+                    {association.description ||
+                      "No description available yet."}
+                  </p>
 
-                <div className="flex gap-4 text-sm text-gray-500 mb-4">
-                  <span>
-                    👥 {association._count.memberships} members
-                  </span>
-                  <span>
-                    📅 {association._count.events} events
-                  </span>
-                </div>
+                  <div className="flex gap-4 text-sm text-gray-500 mb-4">
+                    <span>
+                      👥 {association._count.memberships} members
+                    </span>
+                    <span>
+                      📅 {association._count.events} events
+                    </span>
+                  </div>
+                </Link>
 
-                                <div className="flex gap-2">
+                <div className="flex gap-2">
                   {association.website && (
                     <a
                       href={association.website}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                       className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                       title="Visit Website"
                     >
@@ -167,7 +171,7 @@ export default async function AssociationsPage() {
                   )}
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
