@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run vercel-build",
+  "buildCommand": "prisma generate && prisma migrate deploy && next build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
@@ -9,12 +9,6 @@
     "deploymentEnabled": {
       "main": true,
       "dev": false
-    }
-  },
-  "build": {
-    "env": {
-      "SKIP_ENV_VALIDATION": "1",
-      "PRISMA_SKIP_POSTINSTALL_GENERATE": "false"
     }
   }
 }
