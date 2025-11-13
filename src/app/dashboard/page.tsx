@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -100,12 +101,12 @@ export default async function DashboardPage() {
           <p className="text-gray-600 mb-6">
             Discover amazing clubs and communities on campus
           </p>
-          <a
+          <Link
             href="/associations"
             className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
             Browse Associations
-          </a>
+          </Link>
         </div>
       )}
     </div>

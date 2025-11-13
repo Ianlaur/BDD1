@@ -1,21 +1,68 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import type { Prisma } from "@prisma/client";
+
+type AssociationWithDetails = Prisma.AssociationProfileGetPayload<{
+  include: {
+    user: true;
+    _count: {
+      select: {
+        memberships: true;
+        events: true;
+      };
+    };
+  };
+}>;
 
 export default async function AssociationsPage() {
-  const associations = await prisma.associationProfile.findMany({
-    include: {
-      user: true,
-      _count: {
-        select: {
-          memberships: true,
-          events: true,
+  let associations: AssociationWithDetails[] = [];
+  let error = null;
+
+  try {
+    associations = await prisma.associationProfile.findMany({
+      include: {
+        user: true,
+        _count: {
+          select: {
+            memberships: true,
+            events: true,
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (e) {
+    console.error("Database error in associations page:", e);
+    error = e instanceof Error ? e.message : "Failed to load associations";
+    associations = [];
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto text-center py-16">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h1 className="text-3xl font-bold mb-4">Database Connection Error</h1>
+          <p className="text-gray-600 mb-6">
+            We're having trouble connecting to the database. Please check your configuration.
+          </p>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
+            <p className="text-sm text-red-800 font-mono">{error}</p>
+          </div>
+          <div className="text-sm text-gray-500 space-y-2">
+            <p>Common fixes:</p>
+            <ul className="list-disc list-inside text-left max-w-md mx-auto">
+              <li>Verify DATABASE_URL environment variable is set</li>
+              <li>Check database is accessible from Vercel</li>
+              <li>Ensure connection string includes ?sslmode=require</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -48,7 +95,7 @@ export default async function AssociationsPage() {
               href={`/associations/${association.id}`}
               className="border rounded-lg overflow-hidden hover:shadow-lg transition block"
             >
-              <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-500 relative">
+              <div className="h-32 bg-linear-to-r from-blue-500 to-purple-500 relative">
                 {association.verified && (
                   <span className="absolute top-2 right-2 bg-white text-blue-600 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
                     <svg
