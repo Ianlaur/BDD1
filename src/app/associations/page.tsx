@@ -2,6 +2,10 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 
+// Force dynamic rendering - don't statically generate this page
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type AssociationWithDetails = Prisma.AssociationProfileGetPayload<{
   include: {
     user: true;
