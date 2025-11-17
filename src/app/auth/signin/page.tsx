@@ -40,13 +40,15 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-purple-100 dark:border-purple-800">
         <div>
-          <h2 className="text-center text-3xl font-bold">Sign in to your account</h2>
-          <p className="mt-2 text-center text-gray-600">
+          <h2 className="text-center text-3xl font-black bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Sign in to your account
+          </h2>
+          <p className="mt-2 text-center text-gray-600 dark:text-gray-400">
             Or{" "}
-            <Link href="/auth/signup" className="text-blue-600 hover:text-blue-700">
+            <Link href="/auth/signup" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">
               create a new account
             </Link>
           </p>
@@ -54,14 +56,14 @@ export default function SignIn() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold mb-2 text-gray-900 dark:text-gray-100">
                 Email address
               </label>
               <input
@@ -70,13 +72,13 @@ export default function SignIn() {
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="you@university.edu"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold mb-2 text-gray-900 dark:text-gray-100">
                 Password
               </label>
               <input
@@ -85,7 +87,7 @@ export default function SignIn() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="••••••••"
               />
             </div>
@@ -94,24 +96,24 @@ export default function SignIn() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="w-full py-3 px-4 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 hover:shadow-lg text-white font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Signing in..." : "Sign in ✨"}
           </button>
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with</span>
             </div>
           </div>
 
           <button
             type="button"
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="w-full py-3 px-4 border border-gray-300 hover:bg-gray-50 rounded-lg font-semibold transition flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-semibold transition flex items-center justify-center gap-2 text-gray-900 dark:text-gray-100"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -135,9 +137,9 @@ export default function SignIn() {
           </button>
         </form>
 
-        <div className="text-center text-sm text-gray-600">
-          <p className="mt-4">
-            <strong>Test Accounts:</strong>
+        <div className="text-center text-sm text-gray-600 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-100 dark:border-purple-800">
+          <p className="mt-2 font-bold text-purple-700 dark:text-purple-300">
+            🔑 Test Accounts:
           </p>
           <p className="mt-1">Email: john.doe@university.edu</p>
           <p>Password: password123</p>
