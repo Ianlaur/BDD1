@@ -29,6 +29,24 @@ enum EventStatus {
   COMPLETED
 }
 
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -117,6 +135,7 @@ model AssociationProfile {
   contactEmail String?
   contactPhone String?
   socialLinks String[]
+  bannerImage String?
   verified    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -125,6 +144,10 @@ model AssociationProfile {
   events      Event[]
   memberships Membership[]
   posts       Post[]
+  teamMembers TeamMember[]
+  budgetTransactions BudgetTransaction[]
+  projects    Project[]
+  meetings    Meeting[]
 
   @@map("association_profiles")
 }
@@ -223,4 +246,99 @@ model Notification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+// ERP Models
+
+model TeamMember {
+  id            String   @id @default(cuid())
+  associationId String
+  name          String
+  email         String?
+  phone         String?
+  position      String
+  role          String   @default("member")
+  department    String?
+  joinedAt      DateTime @default(now())
+  active        Boolean  @default(true)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association AssociationProfile @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@map("team_members")
+}
+
+model BudgetTransaction {
+  id            String          @id @default(cuid())
+  associationId String
+  type          TransactionType
+  amount        Float
+  category      String
+  description   String
+  date          DateTime        @default(now())
+  receipt       String?
+  createdBy     String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  association AssociationProfile @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@map("budget_transactions")
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  associationId String
+  name          String
+  description   String?
+  startDate     DateTime?
+  endDate       DateTime?
+  status        String   @default("active")
+  color         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association AssociationProfile @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  tasks       ProjectTask[]
+
+  @@map("projects")
+}
+
+model ProjectTask {
+  id          String       @id @default(cuid())
+  projectId   String
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  assignedTo  String?
+  dueDate     DateTime?
+  position    Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_tasks")
+}
+
+model Meeting {
+  id            String   @id @default(cuid())
+  associationId String
+  title         String
+  description   String?
+  location      String?
+  startTime     DateTime
+  endTime       DateTime
+  attendees     String[]
+  agenda        String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association AssociationProfile @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@map("meetings")
 }

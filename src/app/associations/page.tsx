@@ -70,44 +70,86 @@ export default async function AssociationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
+    <div className="min-h-screen bg-gray-50 dark:from-gray-900">
       <div className="container mx-auto px-4 py-12">
         {/* Modern Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-black mb-4 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Campus Associations
+        <div className="mb-8">
+          <h1 className="text-5xl md:text-6xl font-black mb-4 text-[#112a60] dark:text-white font-heading">
+            Discover Associations
           </h1>
-          <p className="text-gray-700 dark:text-gray-300 text-xl max-w-2xl mx-auto">
-            🚀 Discover amazing student organizations and find your community
+          <p className="text-gray-600 dark:text-gray-300 text-xl max-w-3xl mb-8">
+            🎓 Explore student organizations and connect with communities that share your passions
           </p>
+          
+          {/* Stats Overview */}
+          {associations.length > 0 && (
+            <div className="flex flex-wrap gap-4 mb-8">
+              <div className="bg-white dark:bg-gray-800 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">🏛️</div>
+                  <div>
+                    <div className="text-2xl font-black text-[#112a60] dark:text-white">{associations.length}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Total Associations</div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">👥</div>
+                  <div>
+                    <div className="text-2xl font-black text-[#f67a19]">
+                      {associations.reduce((sum, a) => sum + a._count.memberships, 0)}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Total Members</div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">📅</div>
+                  <div>
+                    <div className="text-2xl font-black text-[#a5dce2] dark:text-[#a5dce2]">
+                      {associations.reduce((sum, a) => sum + a._count.events, 0)}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Total Events</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {associations.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-8xl mb-6">�</div>
-            <h2 className="text-3xl font-bold mb-4">No Associations Yet</h2>
-            <p className="text-gray-600 text-lg mb-8">
+          <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
+            <div className="text-8xl mb-6">🌟</div>
+            <h2 className="text-3xl font-black mb-4 text-[#112a60] dark:text-white font-heading">No Associations Yet</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">
               Be a pioneer and create the first association on campus!
             </p>
             <Link
               href="/auth/signup"
-              className="inline-block px-8 py-4 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-xl transform hover:scale-105 transition font-semibold"
+              className="inline-block px-8 py-4 bg-[#f67a19] hover:bg-[#e56910] text-white rounded-xl font-bold hover:shadow-xl transform hover:scale-105 transition"
             >
               Create Association ✨
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {associations.map((association) => (
               <div
                 key={association.id}
-                className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700"
+                className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-[#f67a19] group"
               >
-                {/* Header with gradient background */}
+                {/* Header with navy background */}
                 <Link href={`/associations/${association.id}`}>
-                  <div className="h-28 bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 relative cursor-pointer">
+                  <div className="h-32 bg-linear-to-br from-[#112a60] to-[#1a3d7a] relative cursor-pointer overflow-hidden">
+                    {/* Decorative pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#a5dce2] rounded-full -mr-16 -mt-16"></div>
+                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#f67a19] rounded-full -ml-12 -mb-12"></div>
+                    </div>
                     {association.verified && (
-                      <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+                      <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm text-[#112a60] text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg z-10">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"
@@ -124,17 +166,17 @@ export default async function AssociationsPage() {
                 {/* Logo & Content Container */}
                 <div className="relative px-6 pb-6">
                   {/* Logo - Overlapping the header */}
-                  <div className="flex justify-center -mt-12 mb-4">
+                  <div className="flex justify-center -mt-14 mb-4">
                     <Link href={`/associations/${association.id}`}>
-                      <div className="relative group cursor-pointer">
+                      <div className="relative cursor-pointer">
                         {association.user.image ? (
                           <img
                             src={association.user.image}
                             alt={association.user.name || ""}
-                            className="w-24 h-24 rounded-2xl border-4 border-white shadow-xl object-cover group-hover:scale-105 transition-transform"
+                            className="w-28 h-28 rounded-2xl border-4 border-white dark:border-gray-800 shadow-xl object-cover group-hover:scale-105 transition-transform"
                           />
                         ) : (
-                          <div className="w-24 h-24 rounded-2xl border-4 border-white shadow-xl bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-black group-hover:scale-105 transition-transform">
+                          <div className="w-28 h-28 rounded-2xl border-4 border-white dark:border-gray-800 shadow-xl bg-[#f67a19] flex items-center justify-center text-white text-4xl font-black group-hover:scale-105 transition-transform">
                             {association.user.name?.charAt(0) || "A"}
                           </div>
                         )}
@@ -143,12 +185,12 @@ export default async function AssociationsPage() {
                   </div>
 
                   {/* Association Info */}
-                  <Link href={`/associations/${association.id}`} className="block text-center mb-4">
-                    <h3 className="font-black text-xl mb-1 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                  <Link href={`/associations/${association.id}`} className="block text-center mb-3">
+                    <h3 className="font-black text-xl mb-2 text-[#112a60] dark:text-white group-hover:text-[#f67a19] transition font-heading">
                       {association.user.name}
                     </h3>
                     {association.category && (
-                      <span className="inline-block px-3 py-1 bg-linear-to-r from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 text-blue-700 dark:text-blue-300 text-sm font-semibold rounded-full">
+                      <span className="inline-block px-3 py-1.5 bg-[#a5dce2]/20 text-[#112a60] dark:bg-[#a5dce2]/10 dark:text-[#a5dce2] text-xs font-bold rounded-full border border-[#a5dce2]/30">
                         {association.category}
                       </span>
                     )}
@@ -156,25 +198,25 @@ export default async function AssociationsPage() {
 
                   {/* Description */}
                   <Link href={`/associations/${association.id}`}>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 text-center hover:text-gray-900 dark:hover:text-gray-200 transition">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 line-clamp-2 text-center hover:text-gray-900 dark:hover:text-gray-200 transition">
                       {association.description || "Join us to discover more! 🎉"}
                     </p>
                   </Link>
 
                   {/* Stats */}
-                  <div className="flex justify-center gap-6 mb-4 py-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                  <div className="flex justify-center gap-8 mb-5 py-3 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700">
                     <div className="text-center">
-                      <div className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                      <div className="font-black text-xl text-[#112a60] dark:text-white">
                         {association._count.memberships}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Members</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Members</div>
                     </div>
                     <div className="w-px bg-gray-300 dark:bg-gray-600"></div>
                     <div className="text-center">
-                      <div className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                      <div className="font-black text-xl text-[#112a60] dark:text-white">
                         {association._count.events}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Events</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Events</div>
                     </div>
                   </div>
 
@@ -182,14 +224,14 @@ export default async function AssociationsPage() {
                   <div className="flex gap-2">
                     <Link
                       href={`/associations/${association.id}`}
-                      className="flex-1 px-4 py-2.5 bg-linear-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition text-center"
+                      className="flex-1 px-4 py-2.5 bg-[#f67a19] hover:bg-[#e56910] text-white text-sm font-bold rounded-xl hover:shadow-lg transition text-center"
                     >
                       View Profile
                     </Link>
                     {association.website && (
                       <WebsiteLink
                         href={association.website}
-                        className="px-4 py-2.5 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition text-center"
+                        className="px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#a5dce2] hover:bg-[#a5dce2]/10 transition text-center"
                         title="Visit Website"
                       />
                     )}

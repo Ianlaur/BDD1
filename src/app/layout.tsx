@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
 import { Footer } from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const momotrust = localFont({
+  src: "../public/fonts/MomoTrustDisplay-Regular.woff",
+  variable: "--font-momotrust",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const zalandoSans = localFont({
+  src: "../public/fonts/ZalandoSans-Regular.woff",
+  variable: "--font-zalando-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "AssociationConnect - Connect with Campus Clubs",
+  title: "Loft - Connect with Campus Clubs",
   description: "Discover and join student associations and clubs. Stay updated with events, manage memberships, and connect with your community.",
 };
 
@@ -27,11 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+        className={`${momotrust.variable} ${zalandoSans.variable} antialiased`}
       >
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <Sidebar />
+        <div id="main-content" className="md:ml-64 flex flex-col min-h-screen transition-all duration-300">
+          <main className="flex-1 pt-16 md:pt-0">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
