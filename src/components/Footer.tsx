@@ -6,8 +6,8 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-black text-xl mb-4 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              AssociationConnect
+            <h3 className="font-black text-xl mb-4 text-[#112a60] font-heading">
+              Loft
             </h3>
             <p className="text-gray-600 leading-relaxed">
               🎓 Connecting students with clubs and associations to build amazing communities.
@@ -34,7 +34,7 @@ export function Footer() {
         </div>
         
         <div className="mt-8 pt-8 border-t border-purple-100 text-center text-gray-600">
-          <p className="font-medium">&copy; {new Date().getFullYear()} AssociationConnect. All rights reserved. Made with 💜</p>
+          <p className="font-medium">&copy; {new Date().getFullYear()} Loft. All rights reserved. Made with 💜</p>
         </div>
       </div>
     </footer>

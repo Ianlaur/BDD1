@@ -8,9 +8,9 @@ export async function Header() {
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-purple-100 dark:border-purple-800 sticky top-0 z-50 shadow-sm">
       <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 hover:scale-105 transition-transform">
-          <img src="/assologo.png" alt="AssociationConnect Logo" className="h-10 w-auto" />
-          <span className="text-xl font-black bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent hidden sm:inline">
-            AssociationConnect
+          <img src="/assets/loftlogo.png" alt="Loft Logo" className="h-10 w-auto" />
+          <span className="text-xl font-black text-[#112a60] dark:text-white hidden sm:inline font-heading">
+            Loft
           </span>
         </Link>
         
