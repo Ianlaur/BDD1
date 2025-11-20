@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "prisma generate && prisma db push --accept-data-loss && next build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
@@ -7,13 +7,9 @@
   "regions": ["iad1"],
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "dev": false
-    }
-  },
-  "build": {
-    "env": {
-      "SKIP_ENV_VALIDATION": "1"
+      "main": false,
+      "dev": false,
+      "prod": true
     }
   }
 }

@@ -5,8 +5,19 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
 
+// NextAuth v5 uses AUTH_SECRET and AUTH_URL instead of NEXTAUTH_*
+// Support both for backward compatibility
+const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+const authUrl = process.env.AUTH_URL || process.env.NEXTAUTH_URL;
+
+if (!authSecret) {
+  throw new Error("AUTH_SECRET or NEXTAUTH_SECRET environment variable is required");
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
+  secret: authSecret,
+  trustHost: true, // Required for production deployments
   session: {
     strategy: "jwt",
   },
@@ -16,8 +27,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "credentials",
@@ -26,35 +38,49 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log("Auth failed: Missing credentials");
+            return null;
+          }
+
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email as string,
+            },
+          });
+
+          if (!user) {
+            console.log("Auth failed: User not found:", credentials.email);
+            return null;
+          }
+
+          if (!user.password) {
+            console.log("Auth failed: User has no password:", credentials.email);
+            return null;
+          }
+
+          const isPasswordValid = await compare(
+            credentials.password as string,
+            user.password
+          );
+
+          if (!isPasswordValid) {
+            console.log("Auth failed: Invalid password for:", credentials.email);
+            return null;
+          }
+
+          console.log("Auth success:", credentials.email);
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
           return null;
         }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email as string,
-          },
-        });
-
-        if (!user || !user.password) {
-          return null;
-        }
-
-        const isPasswordValid = await compare(
-          credentials.password as string,
-          user.password
-        );
-
-        if (!isPasswordValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
       },
     }),
   ],
