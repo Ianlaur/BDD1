@@ -5,8 +5,19 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
 
+// NextAuth v5 uses AUTH_SECRET and AUTH_URL instead of NEXTAUTH_*
+// Support both for backward compatibility
+const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+const authUrl = process.env.AUTH_URL || process.env.NEXTAUTH_URL;
+
+if (!authSecret) {
+  throw new Error("AUTH_SECRET or NEXTAUTH_SECRET environment variable is required");
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
+  secret: authSecret,
+  trustHost: true, // Required for production deployments
   session: {
     strategy: "jwt",
   },
@@ -16,8 +27,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "credentials",
