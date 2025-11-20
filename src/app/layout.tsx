@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { Footer } from "@/components/Footer";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
 
 const momotrust = localFont({
   src: "../public/fonts/MomoTrustDisplay-Regular.woff",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   description: "Discover and join student associations and clubs. Stay updated with events, manage memberships, and connect with your community.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -32,10 +33,10 @@ export default function RootLayout({
         className={`${momotrust.variable} ${zalandoSans.variable} antialiased`}
       >
         <Sidebar />
-        <div id="main-content" className="md:ml-64 flex flex-col min-h-screen transition-all duration-300">
-          <main className="flex-1 pt-16 md:pt-0">{children}</main>
+        <LayoutWrapper>
+          <main className="flex-1">{children}</main>
           <Footer />
-        </div>
+        </LayoutWrapper>
       </body>
     </html>
   );

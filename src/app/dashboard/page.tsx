@@ -98,14 +98,14 @@ export default async function DashboardPage() {
   } : null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen gradient-mesh">
+      <div className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-5xl font-black text-[#112a60] dark:text-white mb-3 font-heading">
-            Welcome back, {user?.name}! 👋
+        <div className="mb-12">
+          <h1 className="text-5xl md:text-6xl font-black text-[#112a60] dark:text-white mb-4 font-heading">
+            Welcome back, {user?.name}!
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 text-xl">
             {user?.role === "STUDENT"
               ? "Your personalized student dashboard"
               : "Your association management hub"}
@@ -114,28 +114,31 @@ export default async function DashboardPage() {
 
         {/* Association Profile Card */}
         {user?.role === "ASSOCIATION" && user.associationProfile && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8 border-2 border-[#a5dce2]">
-            <div className="flex items-start justify-between mb-6">
+          <div className="bg-white dark:bg-[#112a60]/50 rounded-3xl p-10 mb-10 border border-gray-100 dark:border-[#a5dce2]/20 card-hover">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-8">
               <div className="flex items-center gap-6">
-                <div className="w-24 h-24 rounded-2xl bg-[#f67a19] flex items-center justify-center text-white text-4xl font-black shadow-lg">
+                <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-[#f67a19] to-[#e56a09] flex items-center justify-center text-white text-3xl font-black shadow-lg">
                   {user.name?.charAt(0) || "A"}
                 </div>
                 <div>
-                  <h2 className="text-3xl font-black text-[#112a60] dark:text-white mb-2 font-heading">
+                  <h2 className="text-3xl font-black text-[#112a60] dark:text-white mb-3 font-heading">
                     {user.name}
                   </h2>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="px-3 py-1 bg-[#a5dce2] text-[#112a60] rounded-full font-semibold">
+                  <div className="flex flex-wrap items-center gap-3 text-sm mb-2">
+                    <span className="px-4 py-1.5 bg-[#a5dce2]/20 text-[#112a60] dark:text-[#a5dce2] rounded-full font-semibold border border-[#a5dce2]/30">
                       {user.associationProfile.category}
                     </span>
                     {user.associationProfile.verified && (
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full font-semibold flex items-center gap-1">
-                        ✓ Verified
+                      <span className="px-4 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full font-semibold flex items-center gap-1.5">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Verified
                       </span>
                     )}
                   </div>
                   {user.associationProfile.description && (
-                    <p className="text-gray-600 dark:text-gray-400 mt-3 max-w-2xl">
+                    <p className="text-gray-600 dark:text-gray-300 mt-2 max-w-2xl leading-relaxed">
                       {user.associationProfile.description}
                     </p>
                   )}
@@ -143,35 +146,38 @@ export default async function DashboardPage() {
               </div>
               <Link
                 href={`/associations/${user.associationProfile.id}/edit`}
-                className="px-6 py-3 bg-[#f67a19] hover:bg-[#e56a09] text-white rounded-lg font-semibold transition-all flex items-center gap-2"
+                className="px-6 py-3 bg-[#f67a19] hover:bg-[#e56a09] text-white rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg shadow-[#f67a19]/20"
               >
-                ✏️ Edit Profile
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit Profile
               </Link>
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Members</div>
-                <div className="text-2xl font-black text-[#112a60] dark:text-white">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-[#112a60]/5 dark:bg-[#112a60]/30 rounded-2xl p-5 border border-[#112a60]/10 dark:border-[#112a60]/20">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Members</div>
+                <div className="text-3xl font-black text-[#112a60] dark:text-white">
                   {associationStats?.totalMembers || 0}
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Events</div>
-                <div className="text-2xl font-black text-[#f67a19]">
+              <div className="bg-[#f67a19]/5 dark:bg-[#f67a19]/10 rounded-2xl p-5 border border-[#f67a19]/20">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Events</div>
+                <div className="text-3xl font-black text-[#f67a19]">
                   {associationStats?.totalEvents || 0}
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Posts</div>
-                <div className="text-2xl font-black text-[#a5dce2]">
+              <div className="bg-[#a5dce2]/10 dark:bg-[#a5dce2]/10 rounded-2xl p-5 border border-[#a5dce2]/30">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Posts</div>
+                <div className="text-3xl font-black text-[#112a60] dark:text-[#a5dce2]">
                   {associationStats?.totalPosts || 0}
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Budget</div>
-                <div className="text-2xl font-black text-green-600">
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-5 border border-green-200 dark:border-green-800">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Budget</div>
+                <div className="text-3xl font-black text-green-600 dark:text-green-400">
                   ${associationStats?.totalBudget.toFixed(0) || 0}
                 </div>
               </div>
