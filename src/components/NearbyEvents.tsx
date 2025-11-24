@@ -13,7 +13,10 @@ interface Event {
   startDate: string;
   imageUrl: string | null;
   association: {
-    name: string;
+    id: string;
+    user: {
+      name: string | null;
+    };
   };
   distance?: number;
 }
@@ -232,7 +235,7 @@ export function NearbyEvents() {
               </h3>
               
               <p className="text-sm text-[#f67a19] font-semibold mb-3">
-                {event.association.name}
+                {event.association.user.name || 'Unknown Association'}
               </p>
 
               {event.description && (

@@ -56,7 +56,12 @@ export async function GET(req: NextRequest) {
       include: {
         association: {
           select: {
-            name: true,
+            id: true,
+            user: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
         _count: {
