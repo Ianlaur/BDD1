@@ -1,0 +1,32 @@
+# Documentation build artifacts
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Auto-generated files
+*.pdf
+*.docx
+*.html
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node modules (if using doc generators)
+node_modules/
