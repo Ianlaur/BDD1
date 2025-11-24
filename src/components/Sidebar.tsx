@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { SidebarToggle } from "./MobileMenuButton";
 import { SignOutButton } from "./SignOutButton";
+import { SidebarWrapper } from "./SidebarWrapper";
 
 export async function Sidebar() {
   const session = await auth();
@@ -23,9 +23,7 @@ export async function Sidebar() {
   }
 
   return (
-    <>
-      <SidebarToggle />
-
+    <SidebarWrapper>
       <aside id="sidebar" className="fixed left-0 top-0 h-screen w-64 bg-[#112a60] dark:bg-[#0a1a3a] border-r border-[#a5dce2]/20 shadow-2xl z-40 overflow-y-auto transition-transform duration-300 ease-in-out">
         {/* Logo Section */}
         <div className="p-6 border-b border-[#a5dce2]/20">
@@ -173,6 +171,6 @@ export async function Sidebar() {
         </div>
       </nav>
     </aside>
-    </>
+    </SidebarWrapper>
   );
 }

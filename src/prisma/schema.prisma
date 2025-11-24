@@ -173,6 +173,8 @@ model Event {
   title         String
   description   String?
   location      String?
+  latitude      Float?
+  longitude     Float?
   startDate     DateTime
   endDate       DateTime?
   capacity      Int?
