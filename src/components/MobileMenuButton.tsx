@@ -1,21 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useSidebar } from "./SidebarContext";
+import { useEffect } from "react";
 
 export function SidebarToggle() {
-  const [isOpen, setIsOpen] = useState(true);
+  const { isOpen, toggleSidebar } = useSidebar();
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+  // Sync sidebar visibility with state
+  useEffect(() => {
     const sidebar = document.getElementById("sidebar");
-    const content = document.getElementById("main-content");
-    
-    if (sidebar && content) {
-      sidebar.classList.toggle("-translate-x-64");
-      content.classList.toggle("md:ml-64");
-      content.classList.toggle("md:ml-0");
+    if (sidebar) {
+      if (isOpen) {
+        sidebar.classList.remove("-translate-x-64");
+      } else {
+        sidebar.classList.add("-translate-x-64");
+      }
     }
-  };
+  }, [isOpen]);
 
   return (
     <>

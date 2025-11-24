@@ -51,12 +51,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
 
           if (!user) {
-            console.log("Auth failed: User not found:", credentials.email);
+            console.log("Auth failed: User not found");
             return null;
           }
 
           if (!user.password) {
-            console.log("Auth failed: User has no password:", credentials.email);
+            console.log("Auth failed: User has no password");
             return null;
           }
 
@@ -66,11 +66,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
 
           if (!isPasswordValid) {
-            console.log("Auth failed: Invalid password for:", credentials.email);
+            console.log("Auth failed: Invalid password");
             return null;
           }
 
-          console.log("Auth success:", credentials.email);
+          console.log("Auth success for user:", user.id);
           return {
             id: user.id,
             email: user.email,

@@ -3,7 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { Footer } from "@/components/Footer";
-import { LayoutWrapper } from "@/components/LayoutWrapper";
+import { ClientLayout } from "@/components/ClientLayout";
+import { ClientSidebar } from "@/components/ClientSidebar";
 
 const momotrust = localFont({
   src: "../public/fonts/MomoTrustDisplay-Regular.woff",
@@ -32,11 +33,13 @@ export default async function RootLayout({
       <body
         className={`${momotrust.variable} ${zalandoSans.variable} antialiased`}
       >
-        <Sidebar />
-        <LayoutWrapper>
+        <ClientLayout>
+          <ClientSidebar>
+            <Sidebar />
+          </ClientSidebar>
           <main className="flex-1">{children}</main>
           <Footer />
-        </LayoutWrapper>
+        </ClientLayout>
       </body>
     </html>
   );
