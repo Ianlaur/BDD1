@@ -31,6 +31,7 @@
 - [Getting Started](#-getting-started)
 - [Project Structure](#-project-structure)
 - [Documentation](#-documentation)
+- [Management](#-management)
 - [Development](#-development)
 - [Deployment](#-deployment)
 - [Contributing](#-contributing)
@@ -201,6 +202,12 @@ Comprehensive documentation is available in both English and French:
 ### Français 🇫🇷
 - **[Document d'Exigences Produit (PRD)](./docs/fr/PRD.md)** - Spécifications complètes du produit
 - **[Spécification Fonctionnelle](./docs/fr/specificationFonctionnelle.md)** - Comportements fonctionnels détaillés
+
+---
+
+## 🧑‍💼 Management
+
+Toute la coordination interne se fait sur notre espace Notion. Rejoignez-le pour accéder aux plans d'actions, roadmaps et comptes rendus : [Espace de travail Notion](https://www.notion.so/2b760265710780ffbcf7f99faed58045?v=2b76026571078082ab37000c071f0948&source=copy_link).
 
 ---
 
