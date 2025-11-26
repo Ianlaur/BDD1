@@ -10,6 +10,7 @@ interface Event {
   location: string | null;
   latitude: number | null;
   longitude: number | null;
+  category: string | null;
   startDate: string;
   imageUrl: string | null;
   association: {
@@ -20,6 +21,40 @@ interface Event {
   };
   distance?: number;
 }
+
+const CATEGORIES = [
+  "Technology & Innovation",
+  "Academic & Professional",
+  "Arts & Culture",
+  "Athletics & Recreation",
+  "Community Service & Volunteering",
+  "Cultural & International",
+  "Media & Publications",
+  "Political & Advocacy",
+  "Religious & Spiritual",
+  "Special Interest & Hobbies",
+  "Business & Entrepreneurship",
+  "Health & Wellness",
+  "Social & Networking",
+  "Other",
+];
+
+const CATEGORY_ICONS: { [key: string]: string } = {
+  "Technology & Innovation": "🖥️",
+  "Academic & Professional": "📚",
+  "Arts & Culture": "🎨",
+  "Athletics & Recreation": "⚽",
+  "Community Service & Volunteering": "🤝",
+  "Cultural & International": "🌍",
+  "Media & Publications": "📰",
+  "Political & Advocacy": "🗳️",
+  "Religious & Spiritual": "🙏",
+  "Special Interest & Hobbies": "🎯",
+  "Business & Entrepreneurship": "💼",
+  "Health & Wellness": "💪",
+  "Social & Networking": "🎉",
+  "Other": "📌",
+};
 
 interface LocationState {
   granted: boolean;
@@ -40,7 +75,10 @@ export function NearbyEvents() {
     error: null,
   });
   const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
+  const [distance, setDistance] = useState(50);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     // Check if geolocation is supported
@@ -98,15 +136,29 @@ export function NearbyEvents() {
   useEffect(() => {
     // Fetch nearby events when location is obtained
     if (location.granted && location.latitude && location.longitude) {
-      fetchNearbyEvents(location.latitude, location.longitude);
+      fetchNearbyEvents(location.latitude, location.longitude, distance);
     }
-  }, [location.granted, location.latitude, location.longitude]);
+  }, [location.granted, location.latitude, location.longitude, distance]);
 
-  const fetchNearbyEvents = async (lat: number, lon: number) => {
+  useEffect(() => {
+    // Apply filters to events
+    let filtered = [...events];
+    
+    // Filter by categories
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(
+        (event) => event.category && selectedCategories.includes(event.category)
+      );
+    }
+    
+    setFilteredEvents(filtered);
+  }, [events, selectedCategories]);
+
+  const fetchNearbyEvents = async (lat: number, lon: number, radius: number) => {
     setLoadingEvents(true);
     try {
       const response = await fetch(
-        `/api/events/nearby?latitude=${lat}&longitude=${lon}&radius=50`
+        `/api/events/nearby?latitude=${lat}&longitude=${lon}&radius=${radius}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -117,6 +169,19 @@ export function NearbyEvents() {
     } finally {
       setLoadingEvents(false);
     }
+  };
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setDistance(50);
+    setSelectedCategories([]);
   };
 
   const requestLocationAgain = () => {
@@ -189,20 +254,107 @@ export function NearbyEvents() {
     );
   }
 
+  const displayEvents = filteredEvents.length > 0 || selectedCategories.length > 0 ? filteredEvents : events;
+
   // Display events
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8">
+        <h2 className="text-3xl font-black text-[#112a60] dark:text-white mb-2">Events Near You</h2>
+        <p className="text-gray-600 dark:text-gray-300">
+          📍 Discover events happening around you
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            🔍 Filter Events
+          </h3>
+          {(selectedCategories.length > 0 || distance !== 50) && (
+            <button
+              onClick={clearAllFilters}
+              className="text-sm text-[#f67a19] hover:text-[#e56910] font-medium"
+            >
+              Clear all filters
+            </button>
+          )}
+        </div>
+
+        {/* Distance Filter */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
+              📍 Distance Range
+            </label>
+            <span className="text-sm font-semibold text-[#f67a19]">
+              {distance === 200 ? "All Distances" : `Within ${distance} km`}
+            </span>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="200"
+            step="5"
+            value={distance}
+            onChange={(e) => setDistance(Number(e.target.value))}
+            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#f67a19]"
+          />
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <span>1 km</span>
+            <span>50 km</span>
+            <span>100 km</span>
+            <span>All</span>
+          </div>
+        </div>
+
+        {/* Category Filter */}
         <div>
-          <h2 className="text-3xl font-black text-[#112a60] dark:text-white mb-2">Events Near You</h2>
-          <p className="text-gray-600 dark:text-gray-300">
-            📍 Showing events within 50km of your location
-          </p>
+          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 block">
+            🏷️ Event Categories
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((category) => (
+              <button
+                key={category}
+                onClick={() => toggleCategory(category)}
+                className={`
+                  px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                  ${
+                    selectedCategories.includes(category)
+                      ? "bg-[#f67a19] text-white shadow-md transform scale-105"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  }
+                `}
+              >
+                {CATEGORY_ICONS[category]} {category}
+              </button>
+            ))}
+          </div>
+          {selectedCategories.length > 0 && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+              {selectedCategories.length} {selectedCategories.length === 1 ? "category" : "categories"} selected
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
+      {/* Results */}
+      {displayEvents.length === 0 ? (
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
+          <div className="text-6xl mb-4">🔍</div>
+          <p className="text-gray-600 dark:text-gray-300">
+            No events match your filters. Try adjusting your search criteria.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            Showing {displayEvents.length} {displayEvents.length === 1 ? 'event' : 'events'}
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayEvents.map((event) => (
           <Link
             key={event.id}
             href={`/events/${event.id}`}
@@ -238,6 +390,12 @@ export function NearbyEvents() {
                 {event.association.user.name || 'Unknown Association'}
               </p>
 
+              {event.category && (
+                <span className="inline-block px-3 py-1 bg-[#a5dce2]/20 text-[#112a60] dark:text-[#a5dce2] text-xs font-semibold rounded-full mb-3">
+                  {CATEGORY_ICONS[event.category] || '📌'} {event.category}
+                </span>
+              )}
+
               {event.description && (
                 <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
                   {event.description}
@@ -269,7 +427,9 @@ export function NearbyEvents() {
             </div>
           </Link>
         ))}
-      </div>
+        </div>
+        </>
+      )}
     </div>
   );
 }
