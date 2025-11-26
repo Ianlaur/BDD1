@@ -207,7 +207,8 @@ Comprehensive documentation is available in both English and French:
 
 ## 🧑‍💼 Management
 
-Toute la coordination interne se fait sur notre espace Notion. Rejoignez-le pour accéder aux plans d'actions, roadmaps et comptes rendus : [Espace de travail Notion](https://www.notion.so/2b760265710780ffbcf7f99faed58045?v=2b76026571078082ab37000c071f0948&source=copy_link).
+Toute la coordination interne se fait sur notre espace Notion. Rejoignez-le pour accéder aux plans d'actions, roadmaps et comptes rendus : [Espace de travail Notion](https://outrageous-devourer-1da.notion.site/ebd/2b760265710780ffbcf7f99faed58045?v=2b76026571078082ab37000c071f0948).
+
 
 ---
 
