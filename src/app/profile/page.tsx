@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import ShareProfileLink from "@/components/ShareProfileLink";
+import { ProfileStatus, SchoolName } from "@prisma/client";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -68,12 +70,29 @@ export default async function ProfilePage() {
     const major = formData.get("major") as string;
     const graduationYear = formData.get("graduationYear") as string;
     const interests = formData.get("interests") as string;
+    const school = formData.get("school") as string;
+    const program = formData.get("program") as string;
+    const programYear = formData.get("programYear") as string;
+    const hasAssociationExperience = formData.get("hasAssociationExperience") === "on";
+    const linkedinUrl = formData.get("linkedinUrl") as string;
+    const githubUrl = formData.get("githubUrl") as string;
+    const profileStatus = formData.get("profileStatus") as string;
+    const avatarUrl = formData.get("avatarUrl") as string;
 
     // Parse interests
     const interestsArray = interests
       .split(",")
       .map((interest) => interest.trim())
       .filter((interest) => interest.length > 0);
+
+    const schoolValue =
+      school === SchoolName.ALBERT || school === SchoolName.EUGENIA ? school : null;
+    const statusValue =
+      profileStatus === ProfileStatus.PROFESSOR || profileStatus === ProfileStatus.STUDENT
+        ? profileStatus
+        : null;
+    const parsedProgramYear = programYear ? parseInt(programYear, 10) : null;
+    const parsedGraduationYear = graduationYear ? parseInt(graduationYear, 10) : null;
 
     await prisma.$transaction([
       // Update user name
@@ -88,20 +107,46 @@ export default async function ProfilePage() {
           userId: session.user.id,
           bio: bio || null,
           major: major || null,
-          graduationYear: graduationYear ? parseInt(graduationYear) : null,
+          graduationYear: parsedGraduationYear,
           interests: interestsArray,
+          school: schoolValue,
+          program: program || null,
+          programYear: parsedProgramYear,
+          hasAssociationExperience,
+          linkedinUrl: linkedinUrl || null,
+          githubUrl: githubUrl || null,
+          profileStatus: statusValue,
+          avatarUrl: avatarUrl || null,
         },
         update: {
           bio: bio || null,
           major: major || null,
-          graduationYear: graduationYear ? parseInt(graduationYear) : null,
+          graduationYear: parsedGraduationYear,
           interests: interestsArray,
+          school: schoolValue,
+          program: program || null,
+          programYear: parsedProgramYear,
+          hasAssociationExperience,
+          linkedinUrl: linkedinUrl || null,
+          githubUrl: githubUrl || null,
+          profileStatus: statusValue,
+          avatarUrl: avatarUrl || null,
         },
       }),
     ]);
 
     redirect("/profile");
   }
+
+  const SCHOOL_LABELS: Record<SchoolName, string> = {
+    [SchoolName.ALBERT]: "Albert School",
+    [SchoolName.EUGENIA]: "Eugenia",
+  };
+
+  const STATUS_LABELS: Record<ProfileStatus, string> = {
+    [ProfileStatus.STUDENT]: "🎓 Étudiant",
+    [ProfileStatus.PROFESSOR]: "👨‍🏫 Professeur",
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -111,9 +156,17 @@ export default async function ProfilePage() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
             <div className="flex items-start gap-6">
               {/* Avatar */}
-              <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center text-white text-4xl font-black shadow-lg">
-                {user?.name?.charAt(0).toUpperCase() || "?"}
-              </div>
+              {user?.studentProfile?.avatarUrl ? (
+                <img
+                  src={user.studentProfile.avatarUrl}
+                  alt={user.name || "Avatar"}
+                  className="w-24 h-24 rounded-2xl object-cover shadow-lg border-4 border-white dark:border-gray-700"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center text-white text-4xl font-black shadow-lg">
+                  {user?.name?.charAt(0).toUpperCase() || "?"}
+                </div>
+              )}
               
               {/* User Info */}
               <div className="flex-1">
@@ -123,10 +176,21 @@ export default async function ProfilePage() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   {user?.email}
                 </p>
-                <div className="flex gap-3">
-                  <span className="px-4 py-2 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-xl font-bold text-sm">
-                    {user?.role === "STUDENT" ? "🎓 Student" : "🏢 Association"}
-                  </span>
+                <div className="flex flex-wrap gap-3">
+                  {user?.studentProfile?.profileStatus ? (
+                    <span className="px-4 py-2 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-xl font-bold text-sm">
+                      {STATUS_LABELS[user.studentProfile.profileStatus]}
+                    </span>
+                  ) : (
+                    <span className="px-4 py-2 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-xl font-bold text-sm">
+                      {user?.role === "STUDENT" ? "🎓 Student" : "🏢 Association"}
+                    </span>
+                  )}
+                  {user?.studentProfile?.school && (
+                    <span className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-xl font-bold text-sm">
+                      🏫 {SCHOOL_LABELS[user.studentProfile.school]}
+                    </span>
+                  )}
                   {user?.studentProfile?.major && (
                     <span className="px-4 py-2 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-xl font-bold text-sm">
                       📚 {user.studentProfile.major}
@@ -151,6 +215,32 @@ export default async function ProfilePage() {
               </div>
             )}
 
+            {user?.id && (
+              <div className="mt-6 pt-6 border-t-2 border-dashed border-gray-200 dark:border-gray-700 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+                <ShareProfileLink userId={user.id} />
+                <Link
+                  href={`/members/${user.id}`}
+                  className="inline-flex items-center justify-center px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition"
+                >
+                  👁️ Voir mon profil public
+                </Link>
+              </div>
+            )}
+
+            {user?.studentProfile?.program && (
+              <div className="mt-6 pt-6 border-t-2 border-gray-200 dark:border-gray-700">
+                <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-2">Programme</h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {user.studentProfile.program}
+                  {user.studentProfile.programYear && (
+                    <span className="ml-2 inline-flex items-center px-3 py-1 bg-blue-50 dark:bg-blue-900/30 rounded-full text-sm font-semibold text-blue-700 dark:text-blue-200">
+                      Année {user.studentProfile.programYear}
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
+
             {/* Interests */}
             {user?.studentProfile?.interests && user.studentProfile.interests.length > 0 && (
               <div className="mt-6 pt-6 border-t-2 border-gray-200 dark:border-gray-700">
@@ -164,6 +254,43 @@ export default async function ProfilePage() {
                       {interest}
                     </span>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {user?.studentProfile?.hasAssociationExperience && (
+              <div className="mt-6 pt-6 border-t-2 border-gray-200 dark:border-gray-700">
+                <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-2">
+                  Expérience associative
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  ✅ Déjà membre d’une association auparavant
+                </p>
+              </div>
+            )}
+
+            {(user?.studentProfile?.linkedinUrl || user?.studentProfile?.githubUrl) && (
+              <div className="mt-6 pt-6 border-t-2 border-gray-200 dark:border-gray-700">
+                <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Liens</h3>
+                <div className="flex flex-wrap gap-3">
+                  {user.studentProfile?.linkedinUrl && (
+                    <Link
+                      href={user.studentProfile.linkedinUrl}
+                      target="_blank"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/10 text-blue-700 dark:text-blue-300 rounded-full font-semibold hover:bg-blue-600/20"
+                    >
+                      🔗 LinkedIn
+                    </Link>
+                  )}
+                  {user.studentProfile?.githubUrl && (
+                    <Link
+                      href={user.studentProfile.githubUrl}
+                      target="_blank"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900/10 text-gray-800 dark:text-gray-200 rounded-full font-semibold hover:bg-gray-900/20"
+                    >
+                      🐙 GitHub
+                    </Link>
+                  )}
                 </div>
               </div>
             )}
@@ -207,6 +334,55 @@ export default async function ProfilePage() {
                   />
                 </div>
 
+                {/* Avatar URL */}
+                <div>
+                  <label htmlFor="avatarUrl" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Photo de profil (URL)
+                  </label>
+                  <input
+                    type="url"
+                    id="avatarUrl"
+                    name="avatarUrl"
+                    defaultValue={user?.studentProfile?.avatarUrl || ""}
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+                    placeholder="https://..."
+                  />
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label htmlFor="profileStatus" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Statut
+                  </label>
+                  <select
+                    id="profileStatus"
+                    name="profileStatus"
+                    defaultValue={user?.studentProfile?.profileStatus || ""}
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+                  >
+                    <option value="">Sélectionner</option>
+                    <option value={ProfileStatus.STUDENT}>Étudiant</option>
+                    <option value={ProfileStatus.PROFESSOR}>Professeur</option>
+                  </select>
+                </div>
+
+                {/* School */}
+                <div>
+                  <label htmlFor="school" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    École
+                  </label>
+                  <select
+                    id="school"
+                    name="school"
+                    defaultValue={user?.studentProfile?.school || ""}
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+                  >
+                    <option value="">Sélectionner</option>
+                    <option value={SchoolName.ALBERT}>Albert</option>
+                    <option value={SchoolName.EUGENIA}>Eugenia</option>
+                  </select>
+                </div>
+
                 {/* Major */}
                 <div>
                   <label htmlFor="major" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
@@ -220,6 +396,38 @@ export default async function ProfilePage() {
                     className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
                     placeholder="Computer Science"
                   />
+                </div>
+
+                {/* Program */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="program" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                      Programme
+                    </label>
+                    <input
+                      type="text"
+                      id="program"
+                      name="program"
+                      defaultValue={user?.studentProfile?.program || ""}
+                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+                      placeholder="Programme Grande École"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="programYear" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                      Année du programme
+                    </label>
+                    <input
+                      type="number"
+                      id="programYear"
+                      name="programYear"
+                      min="1"
+                      max="6"
+                      defaultValue={user?.studentProfile?.programYear || ""}
+                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+                      placeholder="1"
+                    />
+                  </div>
                 </div>
 
                 {/* Graduation Year */}
@@ -237,6 +445,50 @@ export default async function ProfilePage() {
                     className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
                     placeholder="2026"
                   />
+                </div>
+
+                {/* Association Experience */}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="hasAssociationExperience"
+                    name="hasAssociationExperience"
+                    defaultChecked={user?.studentProfile?.hasAssociationExperience || false}
+                    className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500"
+                  />
+                  <label htmlFor="hasAssociationExperience" className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                    J’ai déjà fait partie d’une association
+                  </label>
+                </div>
+
+                {/* Social Links */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="linkedinUrl" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                      LinkedIn
+                    </label>
+                    <input
+                      type="url"
+                      id="linkedinUrl"
+                      name="linkedinUrl"
+                      defaultValue={user?.studentProfile?.linkedinUrl || ""}
+                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+                      placeholder="https://linkedin.com/in/..."
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="githubUrl" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                      GitHub
+                    </label>
+                    <input
+                      type="url"
+                      id="githubUrl"
+                      name="githubUrl"
+                      defaultValue={user?.studentProfile?.githubUrl || ""}
+                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+                      placeholder="https://github.com/..."
+                    />
+                  </div>
                 </div>
 
                 {/* Interests */}

@@ -15,7 +15,7 @@ export default async function Home() {
             className="w-full h-full object-cover object-center"
           />
           {/* Gradient Overlay - darker left to lighter right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#112a60]/95 via-[#112a60]/70 to-[#112a60]/30"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-[#112a60]/95 via-[#112a60]/70 to-[#112a60]/30"></div>
         </div>
 
         {/* Logo - Top Right */}
