@@ -35,6 +35,7 @@ export async function POST(
     const location = formData.get("location") as string;
     const latitude = formData.get("latitude") as string;
     const longitude = formData.get("longitude") as string;
+    const category = formData.get("category") as string;
     const startDate = formData.get("startDate") as string;
     const endDate = formData.get("endDate") as string;
     const capacity = formData.get("capacity") as string;
@@ -47,6 +48,7 @@ export async function POST(
         location: location || null,
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
+        category: category || null,
         startDate: new Date(startDate),
         endDate: endDate ? new Date(endDate) : null,
         capacity: capacity ? parseInt(capacity) : null,

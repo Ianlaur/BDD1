@@ -186,6 +186,38 @@ export function EventForm({ associationId, associationName }: EventFormProps) {
         </div>
       </div>
 
+      {/* Category */}
+      <div>
+        <label htmlFor="category" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+          Event Category *
+        </label>
+        <select
+          id="category"
+          name="category"
+          required
+          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100 transition"
+        >
+          <option value="">Select a category...</option>
+          <option value="Technology & Innovation">🖥️ Technology & Innovation</option>
+          <option value="Academic & Professional">📚 Academic & Professional</option>
+          <option value="Arts & Culture">🎨 Arts & Culture</option>
+          <option value="Athletics & Recreation">⚽ Athletics & Recreation</option>
+          <option value="Community Service & Volunteering">🤝 Community Service & Volunteering</option>
+          <option value="Cultural & International">🌍 Cultural & International</option>
+          <option value="Media & Publications">📰 Media & Publications</option>
+          <option value="Political & Advocacy">🗳️ Political & Advocacy</option>
+          <option value="Religious & Spiritual">🙏 Religious & Spiritual</option>
+          <option value="Special Interest & Hobbies">🎯 Special Interest & Hobbies</option>
+          <option value="Business & Entrepreneurship">💼 Business & Entrepreneurship</option>
+          <option value="Health & Wellness">💪 Health & Wellness</option>
+          <option value="Social & Networking">🎉 Social & Networking</option>
+          <option value="Other">📌 Other</option>
+        </select>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Choose the category that best fits your event
+        </p>
+      </div>
+
       {/* Capacity */}
       <div>
         <label htmlFor="capacity" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">

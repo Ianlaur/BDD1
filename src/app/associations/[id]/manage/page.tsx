@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import { syncMembershipToTeam } from "@/lib/syncMemberships";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -37,6 +38,69 @@ async function publishEvent(formData: FormData) {
 
   revalidatePath(`/associations/${associationId}/manage`);
   revalidatePath("/events");
+}
+
+// Server action to approve membership
+async function approveMembership(formData: FormData) {
+  "use server";
+  
+  const membershipId = formData.get("membershipId") as string;
+  const associationId = formData.get("associationId") as string;
+  
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/auth/signin");
+  }
+
+  // Verify ownership
+  const association = await prisma.associationProfile.findUnique({
+    where: { id: associationId },
+  });
+
+  if (!association || association.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // Update membership status to ACTIVE
+  await prisma.membership.update({
+    where: { id: membershipId },
+    data: { status: "ACTIVE" },
+  });
+
+  // Sync to team members
+  await syncMembershipToTeam(membershipId, associationId);
+
+  revalidatePath(`/associations/${associationId}/manage`);
+  revalidatePath(`/associations/${associationId}/erp/team`);
+}
+
+// Server action to reject membership
+async function rejectMembership(formData: FormData) {
+  "use server";
+  
+  const membershipId = formData.get("membershipId") as string;
+  const associationId = formData.get("associationId") as string;
+  
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/auth/signin");
+  }
+
+  // Verify ownership
+  const association = await prisma.associationProfile.findUnique({
+    where: { id: associationId },
+  });
+
+  if (!association || association.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // Delete the membership request
+  await prisma.membership.delete({
+    where: { id: membershipId },
+  });
+
+  revalidatePath(`/associations/${associationId}/manage`);
 }
 
 interface PageProps {
@@ -336,12 +400,26 @@ export default async function AssociationManagePage({ params }: PageProps) {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition hover:scale-105">
-                        ✓ Approve
-                      </button>
-                      <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition hover:scale-105">
-                        ✗ Reject
-                      </button>
+                      <form action={approveMembership} className="inline">
+                        <input type="hidden" name="membershipId" value={membership.id} />
+                        <input type="hidden" name="associationId" value={id} />
+                        <button 
+                          type="submit"
+                          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition hover:scale-105"
+                        >
+                          ✓ Approve
+                        </button>
+                      </form>
+                      <form action={rejectMembership} className="inline">
+                        <input type="hidden" name="membershipId" value={membership.id} />
+                        <input type="hidden" name="associationId" value={id} />
+                        <button 
+                          type="submit"
+                          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition hover:scale-105"
+                        >
+                          ✗ Reject
+                        </button>
+                      </form>
                     </div>
                   </div>
                 ))}
