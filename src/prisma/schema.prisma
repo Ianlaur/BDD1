@@ -47,6 +47,16 @@ enum TaskPriority {
   URGENT
 }
 
+enum SchoolName {
+  ALBERT
+  EUGENIA
+}
+
+enum ProfileStatus {
+  STUDENT
+  PROFESSOR
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -118,6 +128,14 @@ model StudentProfile {
   major       String?
   graduationYear Int?
   interests   String[]
+  avatarUrl   String?
+  school      SchoolName?
+  program     String?
+  programYear Int?
+  hasAssociationExperience Boolean @default(false)
+  linkedinUrl String?
+  githubUrl   String?
+  profileStatus ProfileStatus?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
