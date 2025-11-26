@@ -5,9 +5,9 @@ import { notFound, redirect } from "next/navigation";
 import { ProfileStatus, SchoolName } from "@prisma/client";
 
 type MemberProfilePageProps = {
-  params: {
+  params: Promise<{
     userId: string;
-  };
+  }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -22,8 +22,10 @@ export default async function MemberProfilePage({
     redirect("/auth/signin");
   }
 
+  const { userId } = await params;
+
   const user = await prisma.user.findUnique({
-    where: { id: params.userId },
+    where: { id: userId },
     include: {
       studentProfile: true,
       memberships: {
