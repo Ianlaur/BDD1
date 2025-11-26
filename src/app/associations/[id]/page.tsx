@@ -35,6 +35,14 @@ export default async function AssociationInfoPage({ params }: PageProps) {
           joinedAt: "desc",
         },
       },
+      teamMembers: {
+        where: {
+          active: true,
+        },
+        orderBy: {
+          joinedAt: "desc",
+        },
+      },
       events: {
         orderBy: {
           startDate: "desc",
@@ -74,13 +82,70 @@ export default async function AssociationInfoPage({ params }: PageProps) {
         (m) => m.userId === session.user.id && m.role === "board"
       ));
 
-  // Separate board members from regular members (only active members)
-  const boardMembers = association.memberships.filter(
+  // Combine memberships and team members
+  // Board members from both systems
+  const boardMembersFromMemberships = association.memberships.filter(
     (m) => m.status === "ACTIVE" && m.role === "board"
   );
-  const regularMembers = association.memberships.filter(
+  const boardMembersFromTeam = association.teamMembers.filter(
+    (m) => m.role === "board"
+  );
+  
+  // Regular members from both systems
+  const regularMembersFromMemberships = association.memberships.filter(
     (m) => m.status === "ACTIVE" && m.role !== "board"
   );
+  const regularMembersFromTeam = association.teamMembers.filter(
+    (m) => m.role !== "board"
+  );
+  
+  // Create unified member lists (avoid duplicates by email)
+  const boardMemberEmails = new Set(boardMembersFromMemberships.map(m => m.user.email));
+  const boardMembers = [
+    ...boardMembersFromMemberships,
+    ...boardMembersFromTeam
+      .filter(tm => !boardMemberEmails.has(tm.email || ''))
+      .map(tm => ({
+        id: tm.id,
+        userId: '',
+        user: {
+          id: '',
+          name: tm.name,
+          email: tm.email || '',
+          studentProfile: null,
+        },
+        role: tm.role,
+        status: 'ACTIVE' as const,
+        position: tm.position,
+      }))
+  ];
+  
+  const regularMemberEmails = new Set(regularMembersFromMemberships.map(m => m.user.email));
+  const regularMembers = [
+    ...regularMembersFromMemberships,
+    ...regularMembersFromTeam
+      .filter(tm => !regularMemberEmails.has(tm.email || '') && !boardMemberEmails.has(tm.email || ''))
+      .map(tm => ({
+        id: tm.id,
+        userId: '',
+        user: {
+          id: '',
+          name: tm.name,
+          email: tm.email || '',
+          studentProfile: null,
+        },
+        role: tm.role,
+        status: 'ACTIVE' as const,
+        position: tm.position,
+      }))
+  ];
+  
+  // Total member count (unique emails)
+  const allMemberEmails = new Set([
+    ...association.memberships.filter(m => m.status === "ACTIVE").map(m => m.user.email),
+    ...association.teamMembers.map(m => m.email).filter(Boolean)
+  ]);
+  const totalMembers = allMemberEmails.size;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -345,7 +410,7 @@ export default async function AssociationInfoPage({ params }: PageProps) {
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-black text-[#112a60] dark:text-white">
-                    {association._count.memberships}
+                    {totalMembers}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Members</div>
                 </div>
@@ -454,7 +519,7 @@ export default async function AssociationInfoPage({ params }: PageProps) {
                           {membership.user.name || membership.user.email}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">
-                          Board Member
+                          {'position' in membership && membership.position ? membership.position : 'Board Member'}
                         </div>
                       </div>
                     </div>

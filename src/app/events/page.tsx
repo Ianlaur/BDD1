@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import EventsClient from "@/components/EventsClient";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -42,6 +43,31 @@ export default async function EventsPage() {
       startDate: "asc",
     },
   });
+
+  // Serialize events for client component
+  const serializedEvents = allEvents.map(event => ({
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    location: event.location,
+    latitude: event.latitude,
+    longitude: event.longitude,
+    category: event.category,
+    startDate: event.startDate,
+    endDate: event.endDate,
+    capacity: event.capacity,
+    imageUrl: event.imageUrl,
+    status: event.status,
+    associationId: event.associationId,
+    association: {
+      name: event.association.user.name || "Unknown Association",
+      user: {
+        email: event.association.user.email,
+      },
+    },
+    registrations: event.registrations,
+    _count: event._count,
+  }));
 
   // Get user's registered events
   const myEvents = await prisma.eventRegistration.findMany({
@@ -188,6 +214,18 @@ export default async function EventsPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* All Events */}
           <div className="lg:col-span-2">
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-6">
+              🎯 Discover Events
+            </h2>
+            <EventsClient
+              events={serializedEvents}
+              registerForEvent={registerForEvent}
+              unregisterFromEvent={unregisterFromEvent}
+            />
+          </div>
+
+          {/* Hidden original code for backup - DELETE LATER */}
+          <div className="hidden">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
               <h2 className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-6">
                 🎯 Upcoming Events
