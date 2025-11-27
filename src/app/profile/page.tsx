@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import ShareProfileLink from "@/components/ShareProfileLink";
+import CVGenerator from "@/components/CVGenerator";
+import ProjectsManager from "@/components/ProjectsManager";
+import ExperiencesManager from "@/components/ExperiencesManager";
 import { ProfileStatus, SchoolName } from "@prisma/client";
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +21,20 @@ export default async function ProfilePage() {
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     include: {
-      studentProfile: true,
+      studentProfile: {
+        include: {
+          projects: {
+            orderBy: {
+              startDate: "desc",
+            },
+          },
+          experiences: {
+            orderBy: {
+              startDate: "desc",
+            },
+          },
+        },
+      },
       associationProfile: true,
       memberships: {
         include: {
@@ -295,6 +311,14 @@ export default async function ProfilePage() {
               </div>
             )}
           </div>
+
+          {/* CV Generator Section */}
+          <CVGenerator
+            userId={user?.id || ""}
+            profileComplete={!!user?.studentProfile}
+            associationsCount={user?.memberships?.length || 0}
+            interestsCount={user?.studentProfile?.interests?.length || 0}
+          />
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Edit Profile Form */}
@@ -596,6 +620,20 @@ export default async function ProfilePage() {
               )}
             </div>
           </div>
+
+          {/* Projects and Experiences Section */}
+          {user?.studentProfile && (
+            <div className="grid lg:grid-cols-2 gap-8 mt-8">
+              <ExperiencesManager
+                initialExperiences={user.studentProfile.experiences || []}
+                profileId={user.studentProfile.id}
+              />
+              <ProjectsManager
+                initialProjects={user.studentProfile.projects || []}
+                profileId={user.studentProfile.id}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

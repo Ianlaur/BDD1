@@ -30,11 +30,16 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 html {
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  /* Hardware acceleration */
+  -webkit-overflow-scrolling: touch;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
@@ -54,12 +59,24 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 /* Modern card hover effect */
 .card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Use GPU acceleration */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Only set will-change on hover to avoid constant repainting */
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
+  transform: translate3d(0, -4px, 0);
+  -webkit-transform: translate3d(0, -4px, 0);
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  will-change: transform;
+}
+
+.card-hover:not(:hover) {
+  will-change: auto;
 }
 
 /* Glass morphism effect */
@@ -85,6 +102,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     radial-gradient(at 0% 50%, rgba(165, 220, 226, 0.05) 0px, transparent 50%),
     radial-gradient(at 80% 100%, rgba(17, 42, 96, 0.05) 0px, transparent 50%),
     radial-gradient(at 0% 100%, rgba(246, 122, 25, 0.05) 0px, transparent 50%);
+  /* Optimize gradient rendering */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: auto;
 }
 
 /* Infinite scroll animation for carousel */
@@ -105,3 +126,11 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .animate-scroll:hover {
   animation-play-state: paused;
 }
+
+/* Optimize images and media */
+img, video, iframe {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+
